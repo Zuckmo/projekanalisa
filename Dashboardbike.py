@@ -79,4 +79,8 @@ ax[2].set_title('Distribusi Monetary')
 st.pyplot(fig)
 
 st.write("Dashboard ini membantu memahami pola penyewaan sepeda berdasarkan waktu, cuaca, musim, serta analisis pelanggan menggunakan metode RFM.")
-	
+try:
+    # Kode utama aplikasi
+    st.write("Aplikasi berjalan!")
+except Exception as e:
+    st.error(f"Terjadi kesalahan: {e}")
