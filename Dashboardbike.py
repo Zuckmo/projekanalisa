@@ -12,16 +12,7 @@ try:
     hour = pd.read_csv(hour_url)
 
     # Pastikan 'dteday' dalam format datetime
-    day['dteday'] = pd.to_datetime(day['dteday'], errors='coerce')
-
-    # Cek jika ada nilai NaT setelah konversi
-    if day['dteday'].isna().sum() > 0:
-        st.warning("Beberapa nilai di 'dteday' tidak valid dan dikonversi menjadi NaT.")
-
-    # Pastikan semua kolom yang bertipe object dikonversi ke tipe yang sesuai
-    day = day.infer_objects()
-    hour = hour.infer_objects()
-
+    day['dteday'] = pd.to_datetime(day['dteday'])
 except Exception as e:
     st.error(f"Terjadi kesalahan saat memuat data: {e}")
     st.stop()
@@ -75,6 +66,7 @@ st.header("Analisis RFM (Recency, Frequency, Monetary)")
 # Menghitung Recency (seberapa baru pelanggan menyewa)
 latest_date = day['dteday'].max()
 day['Recency'] = (latest_date - day['dteday']).dt.days
+recency = day.groupby('dteday')['Recency'].min()
 
 # Menghitung Frequency (berapa kali pelanggan menyewa)
 frequency = day.groupby('dteday')['total'].count()
@@ -83,9 +75,7 @@ frequency = day.groupby('dteday')['total'].count()
 monetary = day.groupby('dteday')['total'].sum()
 
 # Gabungkan hasil RFM
-rfm = pd.DataFrame({'Recency': day.groupby('dteday')['Recency'].min(),
-                    'Frequency': frequency,
-                    'Monetary': monetary})
+rfm = pd.DataFrame({'Recency': recency, 'Frequency': frequency, 'Monetary': monetary})
 st.write(rfm.describe())
 
 # Visualisasi RFM
@@ -104,3 +94,4 @@ try:
     st.write("Aplikasi berjalan dengan sukses! 🚀")
 except Exception as e:
     st.error(f"Terjadi kesalahan: {e}")
+    st.stop()   
