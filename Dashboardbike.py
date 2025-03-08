@@ -1,16 +1,21 @@
-
-
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Load data
-day_url = "https://raw.githubusercontent.com/Zuckmo/Analisa/refs/heads/master/day_cleaned.csv"
-hour_url = "https://raw.githubusercontent.com/Zuckmo/Analisa/refs/heads/master/hour_cleaned.csv"
+# Load data dengan pengecekan error
+try:
+    day_url = "https://raw.githubusercontent.com/Zuckmo/Analisa/refs/heads/master/day_cleaned.csv"
+    hour_url = "https://raw.githubusercontent.com/Zuckmo/Analisa/refs/heads/master/hour_cleaned.csv"
 
-day = pd.read_csv(day_url)
-hour = pd.read_csv(hour_url)
+    day = pd.read_csv(day_url)
+    hour = pd.read_csv(hour_url)
+
+    # Pastikan 'dteday' dalam format datetime
+    day['dteday'] = pd.to_datetime(day['dteday'])
+except Exception as e:
+    st.error(f"Terjadi kesalahan saat memuat data: {e}")
+    st.stop()
 
 # Sidebar Navigation
 st.sidebar.header("Dashboard Navigation")
@@ -31,6 +36,9 @@ st.header("Penyewaan Sepeda Berdasarkan Musim")
 season_count = day.groupby("season")["total"].sum()
 fig, ax = plt.subplots()
 season_count.plot(kind='bar', ax=ax, color=['blue', 'orange', 'green', 'red'])
+
+# ✅ Memastikan jumlah tick sesuai dengan jumlah label
+ax.set_xticks(range(len(season_count)))
 ax.set_xticklabels(['Spring', 'Summer', 'Fall', 'Winter'], rotation=0)
 ax.set_ylabel("Jumlah Penyewaan")
 st.pyplot(fig)
@@ -39,6 +47,9 @@ st.pyplot(fig)
 st.header("Pengaruh Cuaca terhadap Penyewaan Sepeda")
 fig, ax = plt.subplots()
 sns.boxplot(x='weather_situation', y='total', data=day, ax=ax)
+
+# ✅ Menyesuaikan jumlah tick sebelum set_xticklabels()
+ax.set_xticks(range(1, 5))  # Sesuaikan dengan jumlah kategori cuaca
 ax.set_xticklabels(['Clear', 'Mist', 'Light Snow', 'Heavy Rain'])
 st.pyplot(fig)
 
@@ -54,8 +65,7 @@ st.header("Analisis RFM (Recency, Frequency, Monetary)")
 
 # Menghitung Recency (seberapa baru pelanggan menyewa)
 latest_date = day['dteday'].max()
-day['dteday'] = pd.to_datetime(day['dteday'])
-day['Recency'] = (pd.to_datetime(latest_date) - day['dteday']).dt.days
+day['Recency'] = (latest_date - day['dteday']).dt.days
 recency = day.groupby('dteday')['Recency'].min()
 
 # Menghitung Frequency (berapa kali pelanggan menyewa)
@@ -79,8 +89,8 @@ ax[2].set_title('Distribusi Monetary')
 st.pyplot(fig)
 
 st.write("Dashboard ini membantu memahami pola penyewaan sepeda berdasarkan waktu, cuaca, musim, serta analisis pelanggan menggunakan metode RFM.")
+
 try:
-    # Kode utama aplikasi
-    st.write("Aplikasi berjalan!")
+    st.write("Aplikasi berjalan dengan sukses! 🚀")
 except Exception as e:
     st.error(f"Terjadi kesalahan: {e}")
