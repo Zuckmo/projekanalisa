@@ -19,7 +19,7 @@ tab1, tab2, tab3 = st.tabs(["FILE DATASET", "VISUALISASI", "CONCLUSION"])
  
 with tab1:
 
-    csv_url = "https://raw.githubusercontent.com/Zuckmo/Analisa/refs/heads/master/day_cleaned.csv"
+    csv_url = "https://raw.githubusercontent.com/adinurrohkhim/analisadata_pyton/main/day.csv"
     st.header("File dataset yang di gunakan dalam analisa")     
     day_df=pd.read_csv(csv_url)
     st.dataframe(day_df)
