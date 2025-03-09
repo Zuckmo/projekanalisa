@@ -6,12 +6,9 @@ import streamlit as st
 sns.set(style='dark')
  
 st.write(
-    """
+    
     # Proyek Analisis Data: Bike Sharing Dataset
-- Nama : Adi Nur Rohkhim
-- Email: adinurrohkhim@gmail.com
-- Id Dicoding : 323165
-    """
+
 )
 
 
